@@ -18,7 +18,7 @@ class UserController {
         password: hashedPass,
         phoneNumber,
         address,
-        comments: [],
+        commentsId: [],
       };
 
       const user = await User.addUser(payload);

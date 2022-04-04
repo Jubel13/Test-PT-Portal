@@ -1,5 +1,4 @@
 const { getDatabase } = require("../config/mongoConnect");
-const { ObjectId } = require("mongodb");
 
 class User {
   static async addUser(payload) {
