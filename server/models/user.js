@@ -24,7 +24,22 @@ class User {
     }
   }
 
-  
+  static async findUser(payload) {
+    try {
+      let db = getDatabase();
+
+      let collection = db.collection("users");
+
+      const foundUser = await collection.findOne({
+        email: payload,
+      });
+
+      return foundUser;
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
 }
 
 module.exports = User;

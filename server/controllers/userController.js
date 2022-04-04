@@ -1,5 +1,6 @@
 const User = require("../models/user");
-const { hash } = require("../helpers/bcrypt");
+const { hash, compare } = require("../helpers/bcrypt");
+const { signToken } = require("../helpers/jwt");
 
 class UserController {
   static async addUser(req, res, next) {
@@ -30,6 +31,52 @@ class UserController {
       } else {
         res.status(500).json(err);
       }
+    }
+  }
+
+  static async login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        throw {
+          code: 400,
+          name: "UNAUTHORIZED",
+          message: "Invalid email or password",
+        };
+      }
+
+      const foundUser = await User.findUser(email);
+
+      if (!foundUser) {
+        throw {
+          code: 403,
+          name: "UNAUTHORIZED",
+          message: "Invalid email or password",
+        };
+      }
+
+      let isPass = compare(password, foundUser.password);
+
+      if (!isPass) {
+        throw {
+          code: 403,
+          name: "UNAUTHORIZED",
+          message: "Invalid email or password",
+        };
+      }
+
+      const payload = {
+        email: foundUser.email,
+        username: foundUser.username,
+      };
+
+      let access_token = signToken(payload);
+
+      res.status(200).json({ access_token: access_token });
+    } catch (err) {
+      // console.log(err);
+      next(err);
     }
   }
 }
